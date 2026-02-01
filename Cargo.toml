@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-gtk = "0.18.2"
-pango-sys = "0.21.5"
-serde = { version = "1.0.228", features = ["derive"] }
+slint = "1.14.1"
+rfd = "0.17.2"
+
+[build-dependencies]
+slint-build = "1.14.1"

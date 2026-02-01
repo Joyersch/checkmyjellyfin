@@ -1,26 +1,33 @@
-use glib::clone;
-// glib and other dependencies are re-exported by the gtk crate
-use gtk::glib;
-use gtk::prelude::*;
+// Prevent console window in addition to Slint window in Windows release builds when, e.g., starting the app via file manager. Ignored on other platforms.
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-// When the application is launched…
-fn on_activate(application: &gtk::Application) {
-    // … create a new window …
-    let window = gtk::ApplicationWindow::new(application);
-    // … with a button in it …
-    let button = gtk::Button::with_label("Hello World!");
-    // … which closes the window when clicked
-    button.connect_clicked(clone!(@weak window => move |_| window.close()));
-    window.set_child(Some(&button));
-    window.present();
+use rfd;
+use std::error::Error;
+
+slint::include_modules!();
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let ui = AppWindow::new()?;
+    ui.on_load_button_clicked({
+        let ui_handle = ui.as_weak();
+        move || {
+            let folder = rfd::FileDialog::new()
+                .set_title("Select a directory")
+                .set_directory("/")
+                .pick_folder();
+            let ui = ui_handle.unwrap();
+            if let Some(path) = folder {
+                let path = path.to_str();
+                ui.set_test(Into::into(path.unwrap_or("No Path selected!")));
+            }
+        }
+    });
+
+    ui.run()?;
+
+    Ok(())
 }
 
-fn main() {
-    // Create a new application with the builder pattern
-    let app = gtk::Application::builder()
-        .application_id("com.github.gtk-rs.examples.basic")
-        .build();
-    app.connect_activate(on_activate);
-    // Run the application
-    app.run();
+fn show_open_dialog() {
+
 }

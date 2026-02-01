@@ -1,0 +1,24 @@
+import { Button, VerticalBox, HorizontalBox } from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    min-width: 1280px;
+    min-height: 720px;
+    title: "checkmyjellyfin";
+    icon: @image-url("../icon.png");
+    in-out property <string> test: "Test";
+    callback load_button_clicked();
+    VerticalBox {
+        HorizontalBox {
+            Text {
+                text: test;
+            }
+
+            Button {
+                text: "Open directory";
+                clicked => {
+                    root.load_button_clicked();
+                }
+            }
+        }
+    }
+}
